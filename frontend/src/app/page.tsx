@@ -17,7 +17,7 @@ export default function Home() {
     const noteMapRef = useRef<NoteMap>({});
 
     const connectWebSocket = () => {
-        ws.current = new WebSocket("ws://localhost:8000/ws");
+        ws.current = new WebSocket("ws://ws.airjam.studio/ws");
 
         ws.current.onopen = () => {
             console.log("WebSocket connected");
