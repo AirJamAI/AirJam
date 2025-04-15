@@ -64,7 +64,6 @@ export default function Home() {
                 <div className="flex flex-col justify-between w-full py-10">
                     <Instruments
                         noteMapRef={noteMapRef}
-                        setInst={setSelectedInstrument}
                         instI={selectedInstrument ?? 0}
                         imgData={imgData}
                         setMulti={setMulti}

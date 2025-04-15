@@ -17,7 +17,7 @@ type WebcamProps = {
     ws: WebSocket | null;
     imgData: ImgData;
     sendImage: (v: string) => void;
-    setInst: any;
+    setInst: React.Dispatch<React.SetStateAction<number>>;
     instI: number;
     noteMapRef: RefObject<NoteMap>;
 };
@@ -178,8 +178,8 @@ export default function Webcam({
                                 !imgData.cols[rightIndex]
                                     ? ""
                                     : imgData.cols[rightIndex].col >= 1
-                                    ? "bg-[#6F73D275]"
-                                    : "bg-[#EFF1ED75]"
+                                      ? "bg-[#6F73D275]"
+                                      : "bg-[#EFF1ED75]"
                             }`}
                         >
                             <ArrowBigLeft className="size-16" />
@@ -192,8 +192,8 @@ export default function Webcam({
                                     !imgData.cols[nextGroupIndex]
                                         ? ""
                                         : imgData.cols[nextGroupIndex].col >= 1
-                                        ? "bg-[#6F73D275]"
-                                        : "bg-[#EFF1ED75]"
+                                          ? "bg-[#6F73D275]"
+                                          : "bg-[#EFF1ED75]"
                                 }`}
                             >
                                 Previous Group
@@ -203,8 +203,8 @@ export default function Webcam({
                                     !imgData.cols[resetIndex]
                                         ? ""
                                         : imgData.cols[resetIndex].col >= 1
-                                        ? "bg-[#6F73D275]"
-                                        : "bg-[#EFF1ED75]"
+                                          ? "bg-[#6F73D275]"
+                                          : "bg-[#EFF1ED75]"
                                 }`}
                             >
                                 Reset Instrument Tempo
@@ -214,8 +214,8 @@ export default function Webcam({
                                     !imgData.cols[prevGroupIndex]
                                         ? ""
                                         : imgData.cols[prevGroupIndex].col >= 1
-                                        ? "bg-[#6F73D275]"
-                                        : "bg-[#EFF1ED75]"
+                                          ? "bg-[#6F73D275]"
+                                          : "bg-[#EFF1ED75]"
                                 }`}
                             >
                                 Next Group
@@ -228,8 +228,8 @@ export default function Webcam({
                                 !imgData.cols[leftIndex]
                                     ? ""
                                     : imgData.cols[leftIndex].col >= 1
-                                    ? "bg-[#6F73D275]"
-                                    : "bg-[#EFF1ED75]"
+                                      ? "bg-[#6F73D275]"
+                                      : "bg-[#EFF1ED75]"
                             }`}
                         >
                             <ArrowBigRight className="size-16" />
@@ -253,12 +253,18 @@ export default function Webcam({
                                             v.col >= 2
                                                 ? "bg-[#43aa8b75]"
                                                 : v.col == 1
-                                                ? "bg-[#6F73D275]"
-                                                : "bg-[#EFF1ED75]"
+                                                  ? "bg-[#6F73D275]"
+                                                  : "bg-[#EFF1ED75]"
                                         }`}
                                     >
-                                        <div className={`my-auto w-full font-serif ${instrumentOptions[instI].label ==
-                                            "Drums" ? 'text-2xl' : 'text-4xl'}`}>
+                                        <div
+                                            className={`my-auto w-full font-serif ${
+                                                instrumentOptions[instI]
+                                                    .label == "Drums"
+                                                    ? "text-2xl"
+                                                    : "text-4xl"
+                                            }`}
+                                        >
                                             {instrumentOptions[instI].label ==
                                             "Drums"
                                                 ? indToDrum[i]

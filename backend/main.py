@@ -1,10 +1,10 @@
 import asyncio
 import base64
 import json
-import os
-import uuid
-import time
 import math
+import os
+import time
+import uuid
 from pathlib import Path
 
 import cv2
@@ -45,6 +45,7 @@ UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 w, h = 320, 180
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -115,7 +116,7 @@ def alter_yolo(img_rgb, handPts):
                     x, y = int(x), int(y)
                     # Ensure the coordinates are within the image bounds
                     if 0 <= x < img_rgb.shape[1] and 0 <= y < img_rgb.shape[0]:
-                        draw_pulsing_circle(img_rgb, x, y, 3) 
+                        draw_pulsing_circle(img_rgb, x, y, 3)
 
 
 def alter_mediapipe(img_rgb, handPts):
@@ -133,7 +134,8 @@ def alter_mediapipe(img_rgb, handPts):
             h, w, _ = img_rgb.shape
             x, y = int(landmark.x * w), int(landmark.y * h)
             handPts.append((x, y, landmark.visibility))
-            draw_pulsing_circle(img_rgb, x, y, 3)        
+            draw_pulsing_circle(img_rgb, x, y, 3)
+
 
 def is_index_finger_up(landmarks):
     # Check if the index finger is extended: tip (8) is above the PIP joint (6)
@@ -160,7 +162,7 @@ def alter_image(file_path, multiplayer):
         alter_yolo(img_rgb, handPts)
     else:
         result = hands.process(img_rgb)
-        
+
         alter_mediapipe(img_rgb, handPts)
         if result.multi_hand_landmarks:
             for hand_landmarks in result.multi_hand_landmarks:
@@ -205,6 +207,7 @@ def alter_image(file_path, multiplayer):
     data = {"data": image_array_to_base64(img_rgb), "cols": res}
     return data
 
+
 def draw_pulsing_circle(img, x, y, base_radius=3):
     t = time.time() * 5  # speed of pulse
     pulse = int(math.fabs(math.sin(t)) * 2 + base_radius)
@@ -214,13 +217,12 @@ def draw_pulsing_circle(img, x, y, base_radius=3):
     cv2.circle(img, (x, y), pulse, color2, 2, lineType=cv2.LINE_AA)
 
 
-
 def renderRect(rect: Rectangle, pts, img, active_hands=0):
     for p in pts:
         x, y, conf = p
         np = [x, y]
         if checkCollide(rect, np):
-            rect.collided += 1+active_hands
+            rect.collided += 1 + active_hands
 
     # cv2.rectangle(img, (rect.x1, rect.y1), (rect.x2, rect.y2), (255 if rect.collided == 1 else 0, 0 if rect.collided != 0 else 255, 255 if rect.collided >= 2 else 0), 2)
 

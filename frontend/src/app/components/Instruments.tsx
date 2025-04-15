@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { RefObject, useEffect, useRef, useState } from "react";
+import { Trash } from "lucide-react";
+import { RefObject, useEffect, useRef } from "react";
 import {
     drumMappings,
     initDrumAudioFont,
@@ -9,7 +10,6 @@ import {
     instrumentOptions,
 } from "../../utils/utils";
 import { ImgData } from "../types/WebsocketTypes";
-import { Trash } from "lucide-react";
 
 const arrayRange = (start: number, stop: number, step = 1) =>
     Array.from(
@@ -69,14 +69,12 @@ const drumCount = 7;
 
 export default function Instruments({
     imgData,
-    setInst,
     instI,
     noteMapRef,
     setMulti,
     multi,
 }: {
     imgData: ImgData;
-    setInst: any;
     instI: number;
     noteMapRef: RefObject<NoteMap>;
     setMulti: any;
@@ -84,7 +82,6 @@ export default function Instruments({
 }) {
     // 1) Which instrument index is selected, e.g. 0=Flute, 1=Drums, etc.
     const selectedInstrument = instrumentOptions[instI];
-    const isDrums = selectedInstrument.label === "Drums";
 
     // 2) Dictionary of instrumentName -> array of references
 
@@ -104,11 +101,9 @@ export default function Instruments({
 
     // 3) Script loading. We track which instruments are loaded, so we load once per instrument
     const loadedInstrumentsRef = useRef<Record<string, boolean>>({});
-    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
         (async () => {
-            setLoaded(false);
             const label = selectedInstrument.label;
             if (!loadedInstrumentsRef.current[label]) {
                 // Not yet loaded => load it
@@ -123,19 +118,8 @@ export default function Instruments({
                     console.error("Error loading scripts for", label, err);
                 }
             }
-            setLoaded(true);
         })();
     }, [instI, selectedInstrument]);
-
-    // 4) Next / prev instrument logic
-    function nextInstrument(delta: number) {
-        setInst(() => {
-            let ni = instI + delta;
-            if (ni < 0) ni = instrumentOptions.length - 1;
-            if (ni >= instrumentOptions.length) ni = 0;
-            return ni;
-        });
-    }
 
     // 5) Return the references array for a given instrument label
     function getRefsForInstrument(label: string) {
@@ -433,14 +417,13 @@ export default function Instruments({
         });
     }, [imgData, selectedInstrument]);
 
-    function instHasRepeats(v:InstrumentMeta)
-    {
-        var flag = false
-        noteMapRef.current[v.label].map((e, i) => {
-            if(e.repeatStage > 0) flag = true;
-        })
+    function instHasRepeats(v: InstrumentMeta) {
+        let flag = false;
+        noteMapRef.current[v.label].map((e) => {
+            if (e.repeatStage > 0) flag = true;
+        });
 
-        return flag
+        return flag;
     }
 
     return (
@@ -450,10 +433,13 @@ export default function Instruments({
             "
             >
                 <div className="flex flex-row gap-2 mr-6">
-                    <img src="AirJamLogoMin.png" className="size-12 my-auto"></img>
+                    <img
+                        src="AirJamLogoMin.png"
+                        className="size-12 my-auto"
+                    ></img>
                     <div className="text-3xl font-bold font-serif">AirJam</div>
                 </div>
-                
+
                 <button
                     className={`${
                         multi == "true" ? "bg-secondary" : "bg-teritary"
@@ -466,10 +452,16 @@ export default function Instruments({
                 </button>
             </div>
             <div className="border border-gray-600 my-2" />
-            <div className="font-serif text-center">One hand to play a note, two to repeat it.</div>
-            <div className="font-serif text-center">Raising your index finger also repeats notes in Singleplayer.</div>
+            <div className="font-serif text-center">
+                One hand to play a note, two to repeat it.
+            </div>
+            <div className="font-serif text-center">
+                Raising your index finger also repeats notes in Singleplayer.
+            </div>
             <div className="border border-gray-600 my-2" />
-            <div className="text-[24px] font-serif font-bold text-center">{selectedInstrument.label}</div>
+            <div className="text-[24px] font-serif font-bold text-center">
+                {selectedInstrument.label}
+            </div>
             <div className="text-xl font-serif font-extralight text-center">
                 {`~ ${selectedInstrument.group
                     .charAt(0)
@@ -487,34 +479,45 @@ export default function Instruments({
                     if (noteMapRef.current[v.label])
                         return (
                             <div className="flex flex-col" key={v.label}>
-                                {
-                                instHasRepeats(v) && 
-                                <div className="flex font-bold font-serif flex-row gap-2">
-                                    <button className="bg-secondary cursor-pointer hover:bg-teritary rounded size-5 my-auto p-[2px]"
-                                    onClick={()=>{
-                                        const noteRefs = getRefsForInstrument(v.label);
-                                        noteRefs.forEach((refData) => {
-                                            // Clear any active interval
-                                            if (refData.repeatTimer) {
-                                                clearInterval(refData.repeatTimer);
-                                                refData.repeatTimer = undefined;
-                                            }
-                                            // If there's a note playing, force a quick fade-out and close it.
-                                            if (refData.noteObj) {
-                                                fadeOutAndClose(refData, 0.1);
-                                            }
-                                            // Reset the state properties completely.
-                                            refData.repeatStage = 0;
-                                            refData.colState = 0;
-                                        });
-                                    }}>
-                                        <Trash className="size-full"/>
-                                    </button>
-                                    {`${v.label}`}
-                                    <div className="font-normal">
-                                        {`~ ${v.group.charAt(0).toUpperCase()}${v.group.slice(1)}`}
+                                {instHasRepeats(v) && (
+                                    <div className="flex font-bold font-serif flex-row gap-2">
+                                        <button
+                                            className="bg-secondary cursor-pointer hover:bg-teritary rounded size-5 my-auto p-[2px]"
+                                            onClick={() => {
+                                                const noteRefs =
+                                                    getRefsForInstrument(
+                                                        v.label
+                                                    );
+                                                noteRefs.forEach((refData) => {
+                                                    // Clear any active interval
+                                                    if (refData.repeatTimer) {
+                                                        clearInterval(
+                                                            refData.repeatTimer
+                                                        );
+                                                        refData.repeatTimer =
+                                                            undefined;
+                                                    }
+                                                    // If there's a note playing, force a quick fade-out and close it.
+                                                    if (refData.noteObj) {
+                                                        fadeOutAndClose(
+                                                            refData,
+                                                            0.1
+                                                        );
+                                                    }
+                                                    // Reset the state properties completely.
+                                                    refData.repeatStage = 0;
+                                                    refData.colState = 0;
+                                                });
+                                            }}
+                                        >
+                                            <Trash className="size-full" />
+                                        </button>
+                                        {`${v.label}`}
+                                        <div className="font-normal">
+                                            {`~ ${v.group.charAt(0).toUpperCase()}${v.group.slice(1)}`}
+                                        </div>
                                     </div>
-                                </div>}
+                                )}
                                 {noteMapRef.current[v.label].map((e, i) => {
                                     return (
                                         e.repeatStage != 0 && (
@@ -526,14 +529,24 @@ export default function Instruments({
                                                             : indToNote[i]
                                                     }:`}
                                                     <div className="grid grid-cols-6 gap-1 pl-2 my-auto">
-                                                        {
-                                                            arrayRange(1,5,1).map((v)=>{
-                                                                if(v <= e.repeatStage)
-                                                                return(<div className="rounded-full shadow size-[1.2vw] text-transparent bg-secondary">
-                                                                    #
-                                                                </div>)
-                                                            })
-                                                        }
+                                                        {arrayRange(
+                                                            1,
+                                                            5,
+                                                            1
+                                                        ).map((v) => {
+                                                            if (
+                                                                v <=
+                                                                e.repeatStage
+                                                            )
+                                                                return (
+                                                                    <div
+                                                                        className="rounded-full shadow size-[1.2vw] text-transparent bg-secondary"
+                                                                        key={v}
+                                                                    >
+                                                                        #
+                                                                    </div>
+                                                                );
+                                                        })}
                                                     </div>
                                                 </div>
                                             </div>
