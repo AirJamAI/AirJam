@@ -2,7 +2,11 @@
 nixPkgs = [
   "python3",
   "gcc",
-  "mesa"
+  "mesa",
+  "libGL",
+  "libGLU",
+  "mesa_glu",
+  "glib"
 ]
 
 nixLibs = [
