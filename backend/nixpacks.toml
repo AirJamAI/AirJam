@@ -1,0 +1,15 @@
+[phases.setup]
+nixPkgs = [
+  "python3",
+  "gcc",
+  "mesa",
+  "libGL",
+  "libGLU",
+  "mesa_glu",
+  "glib"
+]
+
+nixLibs = [
+  "zlib",
+  "stdenv.cc.cc.lib"
+]
