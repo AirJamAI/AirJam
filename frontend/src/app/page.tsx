@@ -33,20 +33,46 @@ export default function Home() {
             console.error("WebSocket error:", err);
         };
     };
+    const waitUntilSocketReady = (): Promise<void> => {
+        return new Promise((resolve, reject) => {
+            const maxAttempts = 10;
+            let attempts = 0;
+
+            const checkSocket = () => {
+                if (ws.current?.readyState === WebSocket.OPEN) {
+                    resolve();
+                } else if (
+                    ws.current?.readyState === WebSocket.CLOSED ||
+                    attempts > maxAttempts
+                ) {
+                    reject(new Error("WebSocket failed to connect."));
+                } else {
+                    attempts++;
+                    setTimeout(checkSocket, 100);
+                }
+            };
+
+            checkSocket();
+        });
+    };
 
     const sendImage = async (base64: string) => {
-        if (!ws.current) {
+        if (!ws.current || ws.current.readyState === WebSocket.CLOSED) {
             connectWebSocket();
-            await new Promise((res) => setTimeout(res, 500));
         }
 
-        // Optional: Send as JSON with filename
-        const payload = JSON.stringify({
-            data: base64,
-            multiplayer: multi,
-        });
+        try {
+            await waitUntilSocketReady();
 
-        ws.current!.send(payload);
+            const payload = JSON.stringify({
+                data: base64,
+                multiplayer: multi,
+            });
+
+            ws.current!.send(payload);
+        } catch (error) {
+            console.error("Failed to send image:", error);
+        }
     };
     return (
         <div className="h-[100vh] w-[100vw] bg-primary text-white">
