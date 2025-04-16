@@ -1,7 +1,7 @@
 #!/bin/bash
 
-echo "🔍 Checking libGL.so.1"
-find /nix -name "libGL.so.1" || echo "libGL.so.1 not found"
+# Activate virtualenv (redundant if PATH is already set, but good for clarity)
+source /opt/venv/bin/activate
 
 # Python deps
 pip install -r requirements.txt
